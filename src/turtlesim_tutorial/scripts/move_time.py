@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 from geometry_msgs.msg import Twist
+from geometry_msgs.msg import Vector3
 from turtlesim.msg import Pose
 import sys
 
@@ -13,56 +14,40 @@ def pose_callback(pose):
     robot_y = pose.y
     rospy.loginfo("Robot X = %f\t Robot Y = %f\n",pose.x, pose.y)
 
-def move_turtle(lin_vel,ang_vel,distance):
-    global robot_x, robot_y
-    pub = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
-    rospy.Subscriber('/turtle1/pose',Pose, pose_callback)
-    rate = rospy.Rate(1) # 10hz
-    vel = Twist()
-    while not rospy.is_shutdown():
-        vel.linear.x = lin_vel
-        vel.linear.y = 0
-        vel.linear.z = 0
-        vel.angular.x = 0
-        vel.angular.y = 0
-        vel.angular.z = ang_vel
- 
-        if(robot_x >= distance or robot_y >= distance):
-            rospy.loginfo("Robot hits a wall")
-            rospy.logwarn("Robot Crashed")
-            break
-        pub.publish(vel)
-        rate.sleep()
 
 def move_rubot(lin_vel, ang_vel, distance, time_duration):
-    vel = Twist()
-    time_begin = rospy.Time.now()
+    vel = Twist() #Mi velocidad es un mensaje con la forma de un Twist
+    vel.linear = Vector3(lin_vel, 0, 0)
+    vel.angular = Vector3(0, 0, ang_vel) #Le doy los valores que he cogido previamente del .launch
+    time_begin = rospy.Time.now() #Empiezo a contar el tiempo
+    blnMove = True #boolean para controlar si el robot se mueve o no
+    rospy.Subscriber('/turtle1/pose',Pose, pose_callback)
     pub = rospy.Publisher('/turtle1/cmd_vel', Twist, queue_size=10)
-    blnMove = True
-    #move_turtle(lin_vel, ang_vel, distance)
-    while blnMove:
+
+    while blnMove: #Cuando blnMove sea false, significa que el el robot ha parado, y el bucle se termina
+
         duration = (rospy.Time.now() - time_begin).to_sec()
-        if ( duration < time_duration):
-            vel.linear.x = lin_vel
-            vel.linear.y = 0
-            vel.linear.z = 0
-            vel.angular.x = 0
-            vel.angular.y = 0
-            vel.angular.z = ang_vel
-            pub.publish(vel)
-            rospy.loginfo("Robot Running")
-        else:
+
+        if(robot_x >= distance or robot_y >= distance): #Si me he chocado, paro el robot
             blnMove = False
-            vel.linear.x = 0
-            vel.linear.y = 0
-            vel.linear.z = 0
-            vel.angular.x = 0
-            vel.angular.y = 0
-            vel.angular.z = 0
-            pub.publish(vel)
-            #move_turtle(0,0,0)
+            vel.linear = Vector3(0,0,0)
+            vel.angular = Vector3(0,0,0)
+            rospy.loginfo("Robot hits a wall")
+            rospy.logwarn("Robot Crashed after running for " + str(duration) + "  seconds, what a shame")
+            return
+
+        elif ( duration < time_duration): #Si no he chocado y el tiempo aun no ha pasado, sigo moviendo el robot
+            rospy.loginfo("Robot Running")
+            
+        else: #Si el tiempo ha pasado, paro el robot
+            blnMove = False
+            vel.linear = Vector3(0,0,0)
+            vel.angular = Vector3(0,0,0)
             rospy.logwarn("Stopping Robot")
-    rospy.loginfo("Robot ran for " + str(duration) + " seconds before stopping")            
+            rospy.loginfo("Robot ran for " + str(duration) + " seconds before stopping")  
+            return    
+
+        pub.publish(vel) #A cada iteracion del bucle actualizo la velocidad, por si ha cambiado en algun if
 
 
 if __name__ == '__main__':
@@ -71,6 +56,7 @@ if __name__ == '__main__':
         v= rospy.get_param("~v")
         w= rospy.get_param("~w")
         d= rospy.get_param("~d")
-        move_rubot(v,w,d,10)
+        t= rospy.get_param("~t")
+        move_rubot(v,w,d,t)
     except rospy.ROSInterruptException:
         pass

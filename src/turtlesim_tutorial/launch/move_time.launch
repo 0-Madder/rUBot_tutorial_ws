@@ -4,10 +4,12 @@
         <arg name="v" default="0.7"/>
         <arg name="w" default="0.5"/>
         <arg name="d" default="10"/>
+        <arg name="t" default="10"/>
     <node pkg="turtlesim" type="turtlesim_node" name="turtlesim_node"/>
     <node pkg="turtlesim_tutorial" type="move_time.py" name="move_rubot" output="screen" >
         <param name="v" value="$(arg v)"/>
         <param name="w" value="$(arg w)"/>
         <param name="d" value="$(arg d)"/>
+        <param name="t" value="$(arg t)"/>
     </node>
 </launch>
