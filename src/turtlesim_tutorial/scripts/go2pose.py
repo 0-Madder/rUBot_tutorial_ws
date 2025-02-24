@@ -101,7 +101,7 @@ class TurtleBot:
         rospy.loginfo("Robot Reached destination with the right orientation")
         rospy.logwarn("Stopping robot")
 
-        # If we press control + C, the node will stop.
+        # If we press control + C, the node will stop..
         rospy.spin()
 
 if __name__ == '__main__':
