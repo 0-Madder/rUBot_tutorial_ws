@@ -2,7 +2,7 @@
 
 <launch>
         <arg name="v" default="0.7"/>
-        <arg name="w" default="0.5"/>
+        <arg name="w" default="0"/>
         <arg name="d" default="10"/>
         <arg name="t" default="10"/>
     <node pkg="turtlesim" type="turtlesim_node" name="turtlesim_node"/>

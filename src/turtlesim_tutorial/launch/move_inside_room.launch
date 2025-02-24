@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <launch>
-        <arg name="v" default="0.7"/>
-        <arg name="w" default="-0.2"/>
+        <arg name="v" default= "0.7"/>
+        <arg name="w" default="0"/>
         <arg name="dx_r" default="9"/>
         <arg name="dx_l" default="2.5"/>
         <arg name="dy_u" default="8"/>
