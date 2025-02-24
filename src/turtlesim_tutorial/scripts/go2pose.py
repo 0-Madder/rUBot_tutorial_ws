@@ -92,13 +92,13 @@ class TurtleBot:
 
         # Stopping our robot after the movement is over.
         vel_msg.linear.x = 0
-        vel_msg.angular.z = -1
-        while abs(self.pose.theta - goal_pose.theta) > 0.1:
+        vel_msg.angular.z = -1 #Ya he llegado a la posicion que quiero, ahora giro hasta alcanzar la orientacion que quiero
+        while abs(self.pose.theta - goal_pose.theta) > 0.1: #Doy un poco de margen de error
             rospy.loginfo(self.pose.theta)
             self.velocity_publisher.publish(vel_msg)
-        vel_msg.angular.z = 0
+        vel_msg.angular.z = 0 #Si salgo del while es que ya he cogido la orientacion que queria, asi que me paro del todo
         self.velocity_publisher.publish(vel_msg)
-        rospy.loginfo("Robot Reached destination")
+        rospy.loginfo("Robot Reached destination with the right orientation")
         rospy.logwarn("Stopping robot")
 
         # If we press control + C, the node will stop.
