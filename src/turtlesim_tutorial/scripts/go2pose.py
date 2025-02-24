@@ -54,6 +54,7 @@ class TurtleBot:
         """See video: https://www.youtube.com/watch?v=Qh15Nol5htM."""
         return constant * (self.steering_angle(goal_pose) - self.pose.theta)
 
+
     def move2goal(self):
         """Moves the turtle to the goal."""
         goal_pose = Pose()
@@ -61,6 +62,7 @@ class TurtleBot:
         # Get the input from the user.
         goal_pose.x = self.goal_pose.x
         goal_pose.y = self.goal_pose.y
+        goal_pose.theta = self.goal_pose.theta
 
         # Please, insert a number slightly greater than 0 (e.g. 0.01).
         distance_tolerance = self.distance_tolerance
@@ -90,6 +92,10 @@ class TurtleBot:
 
         # Stopping our robot after the movement is over.
         vel_msg.linear.x = 0
+        vel_msg.angular.z = -1
+        while abs(self.pose.theta - goal_pose.theta) > 0.1:
+            rospy.loginfo(self.pose.theta)
+            self.velocity_publisher.publish(vel_msg)
         vel_msg.angular.z = 0
         self.velocity_publisher.publish(vel_msg)
         rospy.loginfo("Robot Reached destination")
